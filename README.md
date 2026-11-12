@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🥗 MediFood AI
+#  MediFood AI
 
 ### A RAG-Based Personalised Health & Nutrition Chatbot for Disease-Specific Indian Diet Recommendations
 
