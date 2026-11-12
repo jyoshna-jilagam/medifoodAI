@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% block title %}Home · MediFood AI{% endblock %}
+{% block body %}
+<div class="nav"><a class="brand" href="{{ url_for('home') }}">🥗 MediFood AI</a>
+<div class="links"><span>{{ user.name }}</span><a class="btn" href="{{ url_for('chat') }}">Chat →</a><a class="btn ghost" href="{{ url_for('logout') }}">Log out</a></div></div>
+<div class="hero"><small>Welcome back</small>
+<h1>Hello, <em>{{ user.name.split()[0] }}.</em><br>What will you eat today?</h1>
+<p>Ask about your medical condition and get a personalised Indian diet plan grounded in real health records.</p>
+<span class="badge">🩺 Diabetes</span><span class="badge">💊 Hypertension</span><span class="badge">❤️ Heart Disease</span><span class="badge">🌿 PCOS</span><span class="badge">⚖️ Obesity</span><span class="badge">🫀 Anaemia</span><span class="badge">🧪 Liver &amp; Kidney</span></div>
+<div class="stats"><div class="stat"><b>{{ "{:,}".format(n_chunks) }}</b><span>Records indexed</span></div><div class="stat"><b>13</b><span>CSV datasets</span></div><div class="stat"><b>10+</b><span>Conditions</span></div><div class="stat"><b>0</b><span>API keys needed</span></div></div>
+<div class="section"><h2>What can I help with?</h2>
+<div class="cards">
+<div class="card"><div class="ic">🩺</div><h3>Disease Diet Plans</h3><p>Full daily Indian meal plans for your condition.</p></div>
+<div class="card"><div class="ic">🥗</div><h3>Food Recommendations</h3><p>What to eat and avoid, with Indian food examples.</p></div>
+<div class="card"><div class="ic">📋</div><h3>Meal Timing</h3><p>Timed plans from early morning to bedtime.</p></div>
+<div class="card"><div class="ic">💊</div><h3>Supplements &amp; Tips</h3><p>Vitamins and lifestyle advice by condition.</p></div></div></div>
+<div class="section how"><h2>How MediFood AI works</h2>
+<div class="step"><i>1</i><div><b>Pre-loaded health &amp; food data</b><span>13 CSV datasets are loaded by the developer — nothing is uploaded by you.</span></div></div>
+<div class="step"><i>2</i><div><b>TF-IDF vectorisation</b><span>Every row becomes a sentence, then a numeric vector stored as the vector database.</span></div></div>
+<div class="step"><i>3</i><div><b>Cosine similarity retrieval</b><span>Your question is vectorised and matched against all records to fetch the top results.</span></div></div>
+<div class="step"><i>4</i><div><b>Structured answer generation</b><span>Retrieved context + disease knowledge produce Avoid / Eat / Meal Plan / Tips / Supplements.</span></div></div></div>
+<div class="cta"><h2>Ready to get your diet plan?</h2><p>Just type your condition — MediFood AI will do the rest.</p><a class="btn" href="{{ url_for('chat') }}">Start Chatting →</a></div>
+{% endblock %}

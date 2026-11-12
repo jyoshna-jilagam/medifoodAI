@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block title %}Sign in · MediFood AI{% endblock %}
+{% block body %}<div class="auth">
+<div class="auth-side"><div><h1>MediFood<br>AI</h1><div class="sub">Health · Nutrition · Wellness</div></div>
+<div><div class="tag">Eat right for your <em>condition,</em><br>not just your taste.</div>
+<p>Personalised Indian diet plans retrieved from 8,000+ health and nutrition records.</p>
+<span class="pill">Diabetes</span><span class="pill">High BP</span><span class="pill">Heart</span><span class="pill">PCOS</span><span class="pill">Anaemia</span></div>
+<div style="font-size:.75rem;opacity:.4">TF-IDF RAG · No external API</div></div>
+<div class="auth-main"><form class="auth-card" method="post">
+<h2>Welcome back</h2><div class="lead">Sign in to your MediFood AI account</div>
+{% with m = get_flashed_messages(with_categories=true) %}{% for c, t in m %}<div class="flash {{c}}">{{t}}</div>{% endfor %}{% endwith %}
+<label>Email address</label><input type="email" name="email" placeholder="you@example.com" required>
+<label>Password</label><input type="password" name="password" placeholder="••••••••" required>
+<button class="btn block" style="margin-top:20px">Sign In →</button>
+<div class="alt">New here? <a href="{{ url_for('signup') }}">Create an account</a></div>
+</form></div></div>{% endblock %}

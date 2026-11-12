@@ -1,0 +1,56 @@
+{% extends "base.html" %}{% block title %}Chat · MediFood AI{% endblock %}
+{% block body %}
+<div class="nav"><a class="brand" href="{{ url_for('home') }}">🥗 MediFood AI</a>
+<div class="links"><a class="btn ghost" href="{{ url_for('home') }}">← Home</a><a class="btn ghost" href="{{ url_for('logout') }}">Log out</a></div></div>
+<div class="chat-wrap">
+<aside class="side"><h3>👤 Your Profile</h3><div class="who">Signed in as {{ user.name }}</div>
+<div class="row2"><div><label>Age</label><input id="age" type="number" value="35" min="5" max="100"></div>
+<div><label>Gender</label><select id="gender"><option>Male</option><option>Female</option><option>Other</option></select></div></div>
+<div class="row2"><div><label>Weight (kg)</label><input id="weight" type="number" value="70" step="0.5"></div>
+<div><label>Height (cm)</label><input id="height" type="number" value="165" step="0.5"></div></div>
+<div class="bmi">BMI: <b id="bmi">25.7</b> <span id="bmicat"></span></div>
+<label>Your conditions</label><div class="conds" id="conds"></div>
+<label>Allergies</label><input id="allergies" placeholder="e.g. peanuts, gluten">
+<label style="margin-top:18px">Quick questions</label><div id="quick"></div>
+<button type="button" class="qb clear" id="clear">🗑 Clear chat</button>
+</aside>
+<section class="main"><div id="messages"></div>
+<form class="inputbar" id="form"><input id="q" autocomplete="off" placeholder="Ask a health or diet question… e.g. I have diabetes and high BP, what should I eat?">
+<button class="btn">➤</button></form></section></div>
+<script>
+const CONDS=["Diabetes","Hypertension","Heart Disease","Obesity","Kidney Disease","Thyroid","Liver Disease","Anaemia","PCOD/PCOS","Pregnancy"];
+const QUICK=["I have diabetes and high BP, what to eat?","Heart patient Indian diet plan","Weight loss meal plan Indian","PCOS diet recommendations","Anaemia foods to eat in India","Fatty liver what to eat"];
+const $=id=>document.getElementById(id), msgs=$("messages");
+$("conds").innerHTML=CONDS.map(c=>`<label><input type="checkbox" value="${c}"> ${c}</label>`).join("");
+$("quick").innerHTML=QUICK.map(q=>`<button type="button" class="qb">▶ ${q}</button>`).join("");
+document.querySelectorAll("#quick .qb").forEach(b=>b.onclick=()=>{$("q").value=b.textContent.slice(2);send()});
+function bmi(){const w=+$("weight").value,h=+$("height").value/100;if(!w||!h)return["-",""];const v=w/(h*h);
+ return[v.toFixed(1),v<18.5?"(Underweight)":v<25?"(Normal)":v<30?"(Overweight)":"(Obese)"]}
+function upd(){const[v,c]=bmi();$("bmi").textContent=v;$("bmicat").textContent=c}
+["weight","height"].forEach(i=>$(i).oninput=upd);upd();
+function welcome(){msgs.innerHTML=`<div class="welcome"><div class="ic">🥗</div><h2>How can I help you today, {{ user.name.split()[0] }}?</h2><p>Ask about diet plans for diabetes, hypertension, heart disease, PCOS, anaemia and more.<br><em>I only answer health and food questions.</em></p></div>`}
+welcome();
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+async function send(){
+ const q=$("q").value.trim();if(!q)return;$("q").value="";
+ if(msgs.querySelector(".welcome"))msgs.innerHTML="";
+ msgs.insertAdjacentHTML("beforeend",`<div class="u">${esc(q)}</div><div class="typing" id="t">🔍 Searching knowledge base…</div>`);
+ msgs.scrollTop=msgs.scrollHeight;
+ const [b,bc]=bmi();
+ const profile={age:$("age").value,gender:$("gender").value,weight:$("weight").value,height:$("height").value,bmi:`${b} ${bc}`,
+  conditions:[...document.querySelectorAll("#conds input:checked")].map(x=>x.value),allergies:$("allergies").value};
+ try{
+  const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:q,profile})});
+  if(r.redirected){location.href="/login";return}
+  const d=await r.json();$("t").remove();
+  let h=`<div class="b">${d.html||esc(d.error||"Error")}</div>`;
+  if(d.sources&&d.sources.length)h+=`<details><summary>📚 Knowledge base sources (${d.sources.length})</summary>`+
+   d.sources.map(s=>`<div class="src"><em>${esc(s.source)}</em><em>score ${s.score}</em><br>${esc(s.text)}</div>`).join("")+`</details>`;
+  msgs.insertAdjacentHTML("beforeend",h);
+ }catch(e){$("t").remove();msgs.insertAdjacentHTML("beforeend",`<div class="b">Something went wrong. Please try again.</div>`)}
+ msgs.scrollTop=msgs.scrollHeight;
+}
+$("form").onsubmit=e=>{e.preventDefault();send()};
+$("clear").onclick=welcome;
+</script>
+{% endblock %}
